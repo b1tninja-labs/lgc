@@ -11,21 +11,25 @@ behaviour regressed. Reading the code and agreeing with it is not enough. That i
 Legend: `[ok]` implemented and pinned by a named test -- `[part]` partial, with what is
 missing stated -- `[ ]` not implemented -- `[no]` deliberate non-goal.
 
+A Where cell marked `(to be written)` names the test that will pin the row once it exists; no
+such test has been written yet, and the row cannot leave `[ ]` until it has. The Milestone
+column places the row on the ladder in section 2, and `-` means it is not placed yet.
+
 Update the affected row in the same commit that changes the behaviour. A row and its test
 drift apart within one release, and the document becomes useless exactly when it is needed.
 
 ## 1. Obligations
 
-| Obligation | Spec | Status | Where |
-|---|---|---|---|
-| `protocol.encode_request()` | design | `[ ]` | `tests/test_obligations.py::encode_request` |
-| `protocol.decode_response()` | design | `[ ]` | `tests/test_obligations.py::decode_response` |
-| `transport.call()` | design | `[ ]` | `tests/test_obligations.py::call` |
-| `parsers.parse_rib()` | RFC 4271 | `[ ]` | `tests/test_obligations.py::parse_rib` |
-| `query.rib()` | RFC 4271 | `[ ]` | `tests/test_obligations.py::rib` |
-| `query.detail()` | RFC 4271 | `[ ]` | `tests/test_obligations.py::detail` |
-| `guard.assert_read_only()` | design | `[ ]` | `tests/test_obligations.py::assert_read_only` |
-| `federation.query_many()` | design | `[ ]` | `tests/test_obligations.py::query_many` |
+| Obligation | Spec | Status | Where | Milestone |
+|---|---|---|---|---|
+| `protocol.encode_request()` | design | `[ ]` | `tests/test_obligations.py::test_encode_request` (to be written) | M2 |
+| `protocol.decode_response()` | design | `[ ]` | `tests/test_obligations.py::test_decode_response` (to be written) | M2 |
+| `transport.call()` | design | `[ ]` | `tests/test_obligations.py::test_call` (to be written) | M2 |
+| `parsers.parse_rib()` | RFC 4271 | `[ ]` | `tests/test_obligations.py::test_parse_rib` (to be written) | M3 |
+| `query.rib()` | RFC 4271 | `[ ]` | `tests/test_obligations.py::test_rib` (to be written) | M1 |
+| `query.detail()` | RFC 4271 | `[ ]` | `tests/test_obligations.py::test_detail` (to be written) | M1 |
+| `guard.assert_read_only()` | design | `[ ]` | `tests/test_obligations.py::test_assert_read_only` (to be written) | M1 |
+| `federation.query_many()` | design | `[ ]` | `tests/test_obligations.py::test_query_many` (to be written) | M5 |
 
 ## 2. Milestones
 
@@ -54,7 +58,7 @@ the code existing. Coverage in `pyproject.toml` ratchets in the same commit.
 
 ## 5. Open questions
 
-- none recorded yet
+- M4 (SSH and HTTP backends with host key pinning) has no row; transport.call sits on M2: add a pinning row on M4, or fold M4 into M2
 
 ## 6. Publication checklist
 
