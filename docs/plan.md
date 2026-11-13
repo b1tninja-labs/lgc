@@ -12,15 +12,23 @@ other way round.
 
 ## Position
 
-**Tier 3, wave 3** - the routing-operations story. Tier 3 is planned: a solid gap with no
-urgency, and better work once Tier 1 exists.
+**Tier 3, wave 5** - the rest, in tier order, one at a time. Tier 3 is planned: a solid gap with
+no urgency, and better work once Tier 1 exists. An earlier generated label said "wave 3, the
+routing-operations story"; PORTFOLIO.md section 7 puts wave 3 at rtrkit, routevalid and asnkit's
+validation-state join, and lists lgc under wave 5.
 
 ## Depends on
 
-None. The portfolio plan puts no other project between this one and a first release: every
-obligation in [../ROADMAP.md](../ROADMAP.md) is this repository's own, and nothing outside it
-has to land first. That cuts both ways - a missing dependency is never the reason this project
-has not shipped, and its wave position is the only thing holding it back.
+- **pathattr** (soft) - the README promises typed objects, and a typed BGP path attribute needs
+  pathattr's codec. **Status: shell.** Every row that returns typed BGP objects
+  (`parsers.parse_rib()`, M3) is blocked on it. The M1 and M2 rows do not need it: they return the
+  RFC 8522 reply as sent. PORTFOLIO.md section 9 item 15 declares pathattr a dependency of asnkit,
+  bmpkit, bgpfeed and routevalid and does not name lgc; this edge is recorded here only until the
+  owner confirms it. The earlier "Depends on: None" was true of the request builder and wrong of
+  the README's promise.
+
+The protocol is RFC 8522 (Looking Glass Command Set), decided in PORTFOLIO.md section 9 item 15.
+Nothing else gates the first release of the guard, the request builder and the response decoder.
 
 ## Sequencing rules
 

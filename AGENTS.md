@@ -63,7 +63,9 @@ rather than merely incomplete.
 
 ## Read before implementing
 
-- LGC, LGS, FRR and BIRD interfaces are not specifications with errata: pin versions in fixtures and treat output drift as a bug in the parser, not the device.
+- The protocol is RFC 8522 (Looking Glass Command Set), decided in PORTFOLIO.md section 9 item 15. It has no errata on file; its examples carry two defects (ROADMAP.md section 3).
+- Router output formats are not specifications with errata: pin versions in fixtures and treat output drift as a bug in the parser, not the device.
+- The guard is the only place a request is made. Add a function to `guard.FUNCTIONS` only with an RFC section that defines it, and never a raw-command path.
 - Vendor text formats change between releases without notice, which is why every parser needs a captured fixture per version.
 
 ## Protocol work

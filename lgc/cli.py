@@ -17,7 +17,7 @@ Examples:
 def build_parser():
     return argparse.ArgumentParser(
         prog="lgc",
-        description="Typed looking glass clients: the de-facto LGC and LGS wire protocol, HTTP and SSH backends, and vendor output parsers that produce pathattr objects",
+        description="Looking glass client for RFC 8522 (Looking Glass Command Set): a read-only request builder, an HTTPS backend and, once pathattr has the codec, parsers that produce typed objects",
         epilog=USAGE,
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )

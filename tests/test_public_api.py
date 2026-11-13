@@ -15,14 +15,14 @@ import pytest
 import lgc as package
 
 SURFACE = [
-    ("protocol", "encode_request", "design"),
-    ("protocol", "decode_response", "design"),
-    ("transport", "call", "design"),
+    ("protocol", "encode_request", "RFC 8522"),
+    ("protocol", "decode_response", "RFC 8522"),
+    ("transport", "call", "RFC 8522"),
     ("parsers", "parse_rib", "RFC 4271"),
-    ("query", "rib", "RFC 4271"),
-    ("query", "detail", "RFC 4271"),
-    ("guard", "assert_read_only", "design"),
-    ("federation", "query_many", "design"),
+    ("query", "rib", "RFC 8522"),
+    ("query", "detail", "RFC 8522"),
+    ("guard", "assert_read_only", "RFC 8522"),
+    ("federation", "query_many", "RFC 8522"),
 ]
 
 

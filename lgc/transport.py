@@ -1,4 +1,4 @@
-"""HTTP, SSH and raw TCP backends with budgets and host keys.
+"""the HTTPS backend with budgets (RFC 8522 sec. 6 para 1 requires HTTPS); SSH and raw TCP are not built.
 
 Every object in this module is a placeholder until the milestone named in ROADMAP.md lands. A
 stub raises instead of returning a plausible empty value: a protocol library that silently
@@ -23,9 +23,9 @@ __all__ = [
 
 
 async def call(site: Site, query: Query, budget: Budget) -> Response:
-    """Pending behaviour defined by design.
+    """Pending behaviour defined by RFC 8522 sec. 2 and sec. 6.
 
     Not implemented yet. See the ``transport.call()`` row in ROADMAP.md; this stub raises
     on purpose so nothing downstream mistakes it for working code.
     """
-    raise NotImplementedError("call() is not implemented: design")
+    raise NotImplementedError("call() is not implemented: RFC 8522 sec. 2")

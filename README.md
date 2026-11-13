@@ -5,14 +5,13 @@
      the badges stay commented out until the tag exists.
 -->
 
-**Pre-alpha shell.** The package surface, the obligation matrix and the CI gates exist.
-No protocol behaviour is implemented: every public function raises `NotImplementedError`,
-and the test suite records that rather than hiding it. Read
-[ROADMAP.md](ROADMAP.md) before depending on any of it.
+**Pre-alpha.** The request builder, the read-only guard and the response decoder for RFC 8522 are
+implemented and tested. The transport and the query surface still raise `NotImplementedError`, and
+nothing returns typed BGP objects yet. Read [ROADMAP.md](ROADMAP.md) before depending on any of it.
 
 lgc -- looking glass client that returns objects, not terminal text
 
-The last mile of every looking glass is text: someone parses show ip bgp output with a regular expression written in a hurry. The de-facto LGC and LGS protocol has no Python client, the old looking-glass package died in 2019, and pybird only covers BIRD. lgc is a client library with one promise: every query returns typed objects from pathattr and asnkit, and where a device can only give text a named parser with tests owns the conversion. It is read only by construction, which is the property that lets you point it at production.
+The last mile of every looking glass is text: someone parses show ip bgp output with a regular expression written in a hurry. RFC 8522 (Looking Glass Command Set) defines a uniform HTTP and JSON interface to a looking glass, and Python has no client for it: the old looking-glass package died in 2019 and pybird only covers BIRD. lgc is a client library with one promise: it is read only by construction, which is the property that lets you point it at production. Typed objects from pathattr and asnkit are the goal for the router output, and until pathattr has a codec for them the replies are returned raw.
 
 ## The gap, with a date
 
@@ -28,10 +27,10 @@ which is why the table below carries dates instead of adjectives.
 
 What this project intends to add:
 
-- an LGC and LGS client with capability discovery, timeouts and an allow list of query types
-- parsers per device and version producing pathattr objects rather than strings
-- RIB, RIB-in, RIB-out and per-prefix detail queries with one return type
-- read only enforcement in the type system, so a caller cannot send a configuration command by accident
+- an RFC 8522 client with capability discovery, timeouts and an allow list of the functions the RFC defines
+- parsers per device and version producing pathattr objects rather than strings (blocked on pathattr)
+- route, BGP and per-prefix detail queries with one return type
+- read only enforcement in the type system: a request can be built only by the guard, so a caller cannot send a configuration command by accident
 - concurrent multi site queries with per site latency and error accounting
 
 ## Specification spine
@@ -42,25 +41,25 @@ document, which is the honest grain size for a plan. See [docs/rfc-map.md](docs/
 
 | Document | Status | Published | What it gives this project |
 |---|---|---|---|
-| LGC and LGS protocol | de-facto practice | - | the request, response and progress framing used by open source looking glasses |
-| FRR and BIRD command interfaces | implementation practice | - | vtysh, the FRR REST API and birdc JSON output |
-| RFC 4271 | Draft Standard | 2006-01 | the semantics every parser ultimately claims to render |
+| RFC 8522 | Informational | 2019-02 | the looking-glass interface: GET requests under `/.well-known/looking-glass/v1/`, JSend JSON replies |
+| RFC 4271 | Draft Standard | 2006-01 | the semantics every parser ultimately claims to render (typed results, not yet) |
 
 ### Errata watch
 
-- LGC, LGS, FRR and BIRD interfaces are not specifications with errata: pin versions in fixtures and treat output drift as a bug in the parser, not the device.
+- RFC 8522 has no errata on file (2026-11-13); its sec. 2.3.1 example is not valid JSON and its sec. 3.3.2 example lacks members sec. 2.3.1 requires, both pinned in the tests.
+- Router output formats are not specifications with errata: pin versions in fixtures and treat output drift as a bug in the parser, not the device.
 - Vendor text formats change between releases without notice, which is why every parser needs a captured fixture per version.
 
 ## Module layout
 
 | Module | Responsibility |
 |---|---|
-| `protocol` | LGC and LGS framing, request types and progress reporting |
-| `transport` | HTTP, SSH and raw TCP backends with budgets and host keys |
+| `protocol` | RFC 8522 requests and JSend response decoding |
+| `transport` | the HTTPS backend with budgets (SSH and raw TCP are cut: ROADMAP.md) |
 | `parsers` | per vendor and version output conversion into typed objects |
 | `query` | the typed query surface: rib, ribin, ribout, detail, traceroute |
 | `sites` | registry of looking glasses with capabilities and health |
-| `guard` | read only enforcement and an explicit allow list |
+| `guard` | read only enforcement: the closed list of RFC 8522 functions and the only way to make a request |
 | `federation` | concurrent queries across sites with per site accounting |
 
 ## What it does not do

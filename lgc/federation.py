@@ -20,9 +20,9 @@ __all__ = [
 
 
 async def query_many(sites: list, query: Query) -> list:
-    """Pending behaviour defined by design.
+    """Pending behaviour defined by RFC 8522 (one reply per site).
 
     Not implemented yet. See the ``federation.query_many()`` row in ROADMAP.md; this stub
     raises on purpose so nothing downstream mistakes it for working code.
     """
-    raise NotImplementedError("query_many() is not implemented: design")
+    raise NotImplementedError("query_many() is not implemented: RFC 8522")
