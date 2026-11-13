@@ -35,6 +35,10 @@ MAX_BODY = 1_048_576
 """Largest response body ``decode_response`` parses. A convention: RFC 8522 sets no size."""
 
 
+_UNTIMED = frozenset({"router details", "commands"})
+"""Replies whose RFC 8522 example has no ``performed_at`` or ``runtime`` (sec. 3.3.2, 3.3.3)."""
+
+
 class ResponseError(ValueError):
     """The body is not a valid RFC 8522 response. The message says which rule it broke."""
 
@@ -190,9 +194,9 @@ def decode_response(
     The body's ``status`` decides, not the HTTP status code (sec. 4 para 2 says to rely on the
     field); the pair is compared and ``http_consistent`` reports a disagreement instead of hiding
     it. ``success`` and ``fail`` need ``data`` with ``performed_at`` (UTC) and ``runtime``;
-    ``error`` needs ``message``. Pass ``function="router details"`` for that one reply, whose
-    sec. 3.3.2 example carries neither timing member although sec. 2.3.1 says they must be
-    present. Raises ``ResponseError`` for anything else, never an empty result.
+    ``error`` needs ``message``. Pass ``function="router details"`` or ``function="commands"``
+    for those replies, whose sec. 3.3.2 and sec. 3.3.3 examples carry neither timing member
+    although sec. 2.3.1 says they must be present. Raises ``ResponseError`` for anything else, never an empty result.
     """
     if not isinstance(body, bytes | bytearray):
         raise TypeError("decode_response takes the body as bytes")
@@ -208,7 +212,7 @@ def decode_response(
     if not isinstance(parsed, dict):
         raise ResponseError("body must be a JSON object")
     status = parsed.get("status")
-    timing = function != "router details"
+    timing = function not in _UNTIMED
     if status in ("success", "fail"):
         if "data" not in parsed:
             raise ResponseError(f'status "{status}" needs "data" (JSend, RFC 8522 Appendix A)')
