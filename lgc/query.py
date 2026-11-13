@@ -1,18 +1,22 @@
-"""the typed query surface: raw results of RFC 8522 sec. 3.2 for now; typed objects wait on pathattr.
+"""The query surface: the raw replies of RFC 8522 sec. 3.2, through the guard and the HTTPS client.
 
-Every object in this module is a placeholder until the milestone named in ROADMAP.md lands. A
-stub raises instead of returning a plausible empty value: a protocol library that silently
-answers nothing is worse than one that refuses to answer.
+``rib`` and ``detail`` build the guarded request, send it with ``transport.call`` and return what
+the server said, untouched: a ``Success``, ``Fail`` or ``Error`` whose ``data["output"]`` is the
+text the router printed. No typed BGP object is made, because that text is vendor-specific (the
+RFC 8522 sec. 3.2 examples are Cisco-style) and carries no wire attributes for ``pathattr`` to
+decode; typed results need a per-device parser (ROADMAP.md, ``parsers.per-device-fixtures``).
 """
 
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-if TYPE_CHECKING:
-    from typing import Any
+from .guard import assert_read_only
+from .transport import call
 
-    Site = Any  # placeholder: give it a real type in the milestone that needs it
+if TYPE_CHECKING:
+    from .protocol import Error, Fail, Success
+    from .transport import Budget, Site
 
 __all__ = [
     "detail",
@@ -20,19 +24,23 @@ __all__ = [
 ]
 
 
-async def rib(site: Site, prefix: str) -> list:
-    """Pending behaviour defined by RFC 8522 sec. 3.2.
+async def rib(
+    site: Site, prefix: str, *, budget: Budget | None = None, **query: str | int
+) -> Success | Fail | Error:
+    """The raw reply of ``show route {prefix}`` (RFC 8522 sec. 3.2.1), mandatory on every server.
 
-    Not implemented yet. See the ``query.rib()`` row in ROADMAP.md; this stub raises on
-    purpose so nothing downstream mistakes it for working code.
+    ``query`` are RFC 8522 sec. 2.2 query parameters (``protocol``, ``router``, ``vrf``, ...);
+    the guard refuses any other name. ``prefix`` is an address or prefix, never a command.
     """
-    raise NotImplementedError("rib() is not implemented: RFC 8522 sec. 3.2")
+    return await call(site, assert_read_only("show route", prefix, **query), budget)
 
 
-async def detail(site: Site, prefix: str) -> list:
-    """Pending behaviour defined by RFC 8522 sec. 3.2.
+async def detail(
+    site: Site, prefix: str, *, budget: Budget | None = None, **query: str | int
+) -> Success | Fail | Error:
+    """The raw reply of ``show bgp {prefix}`` (RFC 8522 sec. 3.2.2), optional on a server.
 
-    Not implemented yet. See the ``query.detail()`` row in ROADMAP.md; this stub raises
-    on purpose so nothing downstream mistakes it for working code.
+    A server that does not implement it answers with an ``Error`` or ``Fail`` reply, which is
+    returned as it came.
     """
-    raise NotImplementedError("detail() is not implemented: RFC 8522 sec. 3.2")
+    return await call(site, assert_read_only("show bgp", prefix, **query), budget)
